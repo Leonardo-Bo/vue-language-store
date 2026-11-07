@@ -15,7 +15,7 @@ Provides:
 ## Requirements
 
 - Vue 3
-- Pinia 3
+- Pinia 3 or 4
 - Vite
 
 ## Installation
