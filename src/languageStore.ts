@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
+export type TranslationParams = Record<string, string | number>;
+
 export type TranslationLoader = (
     language: string,
 ) => Promise<Record<string, unknown>>;
@@ -13,6 +15,43 @@ export interface LanguageStoreOptions {
 }
 
 let configuration: LanguageStoreOptions | null = null;
+
+/**
+ * Pick the plural form for `count`: an explicit "zero" form when count is 0,
+ * otherwise the CLDR category of the language ("one", "few", "many", "other", ...),
+ * falling back to "other".
+ */
+const selectPlural = (
+    forms: Record<string, unknown>,
+    count: number,
+    language: string,
+): unknown => {
+    if (count === 0 && 'zero' in forms) {
+        return forms.zero;
+    }
+
+    const category = new Intl.PluralRules(language || undefined).select(count);
+
+    return category in forms
+        ? forms[category]
+        : forms.other;
+};
+
+/** Replace `{name}` placeholders with params; unknown placeholders are left as they are. */
+const interpolate = (
+    text: string,
+    params?: TranslationParams,
+): string => {
+    if (!params) {
+        return text;
+    }
+
+    return text.replace(/\{(\w+)\}/g, (placeholder, name: string) =>
+        name in params
+            ? String(params[name])
+            : placeholder,
+    );
+};
 
 export const configureLanguage = (
     options: LanguageStoreOptions,
@@ -88,7 +127,7 @@ export const useLanguageStore = defineStore('language', () => {
         await loadTranslations(language);
     };
 
-    const t = (key: string): string => {
+    const t = (key: string, params?: TranslationParams): string => {
         const keys = key.split('.');
         let result: unknown = translations.value;
 
@@ -104,8 +143,20 @@ export const useLanguageStore = defineStore('language', () => {
             }
         }
 
+        if (
+            result &&
+            typeof result === 'object' &&
+            typeof params?.count === 'number'
+        ) {
+            result = selectPlural(
+                result as Record<string, unknown>,
+                params.count,
+                currentLanguage.value,
+            );
+        }
+
         return typeof result === 'string'
-            ? result
+            ? interpolate(result, params)
             : key;
     };
 

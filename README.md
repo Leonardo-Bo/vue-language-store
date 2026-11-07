@@ -9,6 +9,7 @@ Provides:
 - persistent language preference
 - language switching
 - nested translation keys
+- placeholders (`{name}`) and plural forms
 - simple `tKey()` helper
 
 
@@ -156,6 +157,42 @@ This resolves to:
 navbar.logout
 ```
 
+### Placeholders
+
+```json
+{ "greeting": "Hello {name}" }
+```
+
+```ts
+t('greeting', { name: 'Ada' }); // Hello Ada
+```
+
+Placeholders without a value are left as they are.
+
+### Plurals
+
+Give the plural forms as an object and pass `count`:
+
+```json
+{
+    "requests": {
+        "zero": "No open requests",
+        "one": "{count} open request",
+        "other": "{count} open requests"
+    }
+}
+```
+
+```ts
+t('requests', { count: 0 }); // No open requests
+t('requests', { count: 1 }); // 1 open request
+t('requests', { count: 3 }); // 3 open requests
+```
+
+The form is chosen with the standard `Intl.PluralRules` of the current language
+(`one`, `few`, `many`, `other`, ...); `zero` is optional and used only for 0; `other`
+is the fallback. Without `count`, a key that holds plural forms returns the key itself.
+
 ---
 
 ## Changing language
@@ -185,7 +222,14 @@ Build:
 npm run build
 ```
 
-The compiled package is generated in `dist/`.
+The compiled package is generated in `dist/`. Installing from GitHub builds it
+automatically (`prepare` script).
+
+Tests:
+
+```bash
+npm test
+```
 
 ---
 
@@ -209,7 +253,7 @@ npm install github:Leonardo-Bo/vue-language-store
 For a specific release:
 
 ```bash
-npm install github:Leonardo-Bo/vue-language-store#v1.0.0
+npm install github:Leonardo-Bo/vue-language-store#v1.1.0
 ```
 
 ---
