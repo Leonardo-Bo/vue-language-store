@@ -1,12 +1,12 @@
 export {
     configureLanguage,
     useLanguageStore,
-} from './languageStore';
+} from './languageStore.js';
 
 export type {
     LanguageStoreOptions,
     TranslationLoader,
     TranslationParams,
-} from './languageStore';
+} from './languageStore.js';
 
-export { tKey } from './translations';
+export { tKey } from './translations.js';
