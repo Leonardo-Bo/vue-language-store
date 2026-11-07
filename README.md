@@ -253,7 +253,7 @@ npm install github:Leonardo-Bo/vue-language-store
 For a specific release:
 
 ```bash
-npm install github:Leonardo-Bo/vue-language-store#v1.1.0
+npm install github:Leonardo-Bo/vue-language-store#v1.1.1
 ```
 
 ---

@@ -1,5 +1,5 @@
-import { useLanguageStore } from './languageStore';
-import type { TranslationParams } from './languageStore';
+import { useLanguageStore } from './languageStore.js';
+import type { TranslationParams } from './languageStore.js';
 
 export function tKey(
     prefix: string,
